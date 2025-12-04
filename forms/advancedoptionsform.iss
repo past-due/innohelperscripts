@@ -34,6 +34,10 @@
 // demonstrated in the examples in those files.
 //
 
+#if ComparePackedVersion(Ver, EncodeVer(6,6,0,0)) < 0
+#error This script requires Inno Setup 6.6.0+ to compile
+#endif
+
 #ifndef ADVANCEDOPTIONSFORM_NO_TARGETINSTALLARCH
 #include <targetinstallarch.iss>
 #endif
@@ -183,7 +187,6 @@ begin
   RadioBut.Left := ScaleX(10);
   RadioBut.Width := InstallModePanel.ClientWidth - ScaleX(2 * 10);
   RadioBut.Height := ScaleY(17);
-  RadioBut.Anchors := [akLeft, akTop, akRight];
   RadioBut.Caption := RadioButMessage;
   RadioBut.Font := InstallModePanel.Font; // workaround: for some reason needed to ensure it gets a matching font
   RadioBut.Font.Style := [fsBold];
@@ -195,7 +198,6 @@ begin
   InstallDesc.Top := RadioBut.Top + RadioBut.Height + ScaleY(2);
   InstallDesc.Left := ScaleX(26);
   InstallDesc.Width := InstallModePanel.ClientWidth - ScaleX(26 + 10);
-  InstallDesc.Anchors := [akLeft, akTop, akRight];
   InstallDesc.WordWrap := True; // Must be set before Caption
   InstallDesc.Caption := InstallDescMessage;
   InstallDesc.AdjustHeight();
@@ -230,10 +232,8 @@ begin
     AdvancedInstallOptions_ArchEditMode := 1;
   end;
   StandardIsPatchExistingByDefault := WizardForm.PrevAppDir <> '';
-  Form := CreateCustomForm();
+  Form := CreateCustomForm(ScaleX(200), ScaleY(300), False, True);
   try
-    Form.ClientWidth := ScaleX(400);
-    Form.ClientHeight := ScaleY(300);
     Form.Caption := FmtMessage(CustomMessage('AdvancedOptionsTitle'), [AppName]);
     Form.KeyPreview := True;
     Form.OnKeyDown := @AdvancedInstallOptions_OnKeyDown;
@@ -249,7 +249,6 @@ begin
     InstallModePanel.Width := Form.ClientWidth - ScaleX(2 * 10);
     // Wait on setting height until after adding contents
     InstallModePanel.Left := ScaleX(10);
-    InstallModePanel.Anchors := [akLeft, akTop, akRight];
     InstallModePanel.Color := Form.Color;
     InstallModePanel.BevelKind := bkTile;
     InstallModePanel.BevelOuter := bvNone;
@@ -285,7 +284,6 @@ begin
     InstallArchPanel.Width := Form.ClientWidth - ScaleX(2 * 10);
     // Wait on setting height until after adding contents
     InstallArchPanel.Left := ScaleX(10);
-    InstallArchPanel.Anchors := [akLeft, akTop, akRight];
     InstallArchPanel.Color := Form.Color;
     InstallArchPanel.BevelKind := bkTile;
     InstallArchPanel.BevelOuter := bvNone;
@@ -295,7 +293,6 @@ begin
     InstallArchLabel.Top := ScaleY(8);
     InstallArchLabel.Left := ScaleX(10);
     InstallArchLabel.Width := (InstallArchPanel.ClientWidth / 2) - ScaleX(20);
-    InstallArchLabel.Anchors := [akLeft, akTop, akRight];
     InstallArchLabel.WordWrap := True; // Must be set before Caption
     InstallArchLabel.Caption := CustomMessage('InstallArchitecture');
     InstallArchLabel.AdjustHeight();
@@ -306,7 +303,6 @@ begin
     AdvancedInstallOptions_InstallArchCombo.Top := ScaleY(8);
     AdvancedInstallOptions_InstallArchCombo.Left := (InstallArchPanel.ClientWidth / 2);
     AdvancedInstallOptions_InstallArchCombo.Width := (InstallArchPanel.ClientWidth / 2) - ScaleX(10);
-    AdvancedInstallOptions_InstallArchCombo.Anchors := [akTop, akRight];
     AdvancedInstallOptions_InstallArchCombo.Style := csDropDownList;
     AdvancedInstallOptions_PopulateArchCombo(AdvancedInstallOptions_InstallArchCombo, True);
     AdvancedInstallOptions_InstallArchCombo.OnDropDown := @InstallArchCombo_OnDropdown;
@@ -328,7 +324,6 @@ begin
     OKButton.Left := Form.ClientWidth - ScaleX(75 + 6 + 75 + 10);
     OKButton.Top := Form.ClientHeight - ScaleY(23 + 10);
     OKButton.Height := ScaleY(23);
-    OKButton.Anchors := [akRight, akBottom];
     OKButton.ModalResult := mrOk;
     OKButton.Default := True;
 
@@ -338,7 +333,6 @@ begin
     CancelButton.Left := Form.ClientWidth - ScaleX(75 + 10);
     CancelButton.Top := Form.ClientHeight - ScaleY(23 + 10);
     CancelButton.Height := ScaleY(23);
-    CancelButton.Anchors := [akRight, akBottom];
     CancelButton.ModalResult := mrCancel;
     CancelButton.Cancel := True;
 
@@ -346,8 +340,7 @@ begin
     OKButton.Width := W;
     CancelButton.Width := W;
 
-    Form.KeepSizeY := True;
-    Form.FlipSizeAndCenterIfNeeded(True, WizardForm, False);
+    Form.FlipAndCenterIfNeeded(True, WizardForm, False);
     Form.ActiveControl := OKButton;
 
     if Form.ShowModal() = mrOk then
@@ -372,3 +365,4 @@ begin
     Form.Free();
   end;
 end;
+
