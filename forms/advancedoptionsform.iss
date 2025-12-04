@@ -34,6 +34,10 @@
 // demonstrated in the examples in those files.
 //
 
+#if ComparePackedVersion(Ver, EncodeVer(6,6,0,0)) < 0
+#error This script requires Inno Setup 6.6.0+ to compile
+#endif
+
 #ifndef ADVANCEDOPTIONSFORM_NO_TARGETINSTALLARCH
 #include <targetinstallarch.iss>
 #endif
@@ -230,10 +234,8 @@ begin
     AdvancedInstallOptions_ArchEditMode := 1;
   end;
   StandardIsPatchExistingByDefault := WizardForm.PrevAppDir <> '';
-  Form := CreateCustomForm();
+  Form := CreateCustomForm(ScaleX(400), ScaleY(300), False, True);
   try
-    Form.ClientWidth := ScaleX(400);
-    Form.ClientHeight := ScaleY(300);
     Form.Caption := FmtMessage(CustomMessage('AdvancedOptionsTitle'), [AppName]);
     Form.KeyPreview := True;
     Form.OnKeyDown := @AdvancedInstallOptions_OnKeyDown;
@@ -346,8 +348,7 @@ begin
     OKButton.Width := W;
     CancelButton.Width := W;
 
-    Form.KeepSizeY := True;
-    Form.FlipSizeAndCenterIfNeeded(True, WizardForm, False);
+    Form.FlipAndCenterIfNeeded(True, WizardForm, False);
     Form.ActiveControl := OKButton;
 
     if Form.ShowModal() = mrOk then
@@ -372,3 +373,4 @@ begin
     Form.Free();
   end;
 end;
+
